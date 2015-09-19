@@ -1,7 +1,50 @@
-from flask import Flask, request, redirect
-import twilio.twiml
-from twilio.rest import TwilioRestClient
-import requests
+import httplib2
+import os
+
+from apiclient import discovery
+import oauth2client
+from oauth2client import client
+from oauth2client import tools
+
+try:
+	import argparse
+	flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+except ImportError:
+	flags = None
+
+SCOPES = 'https://mail.google.com/'
+CLIENT_SECRET_FILE = 'client_secret.json'
+APPLICATION_NAME = 'Gmail API Quickstart'
+
+
+def get_credentials():
+	"""Gets valid user credentials from storage.
+
+	If nothing has been stored, or if the stored credentials are invalid,
+	the OAuth2 flow is completed to obtain the new credentials.
+
+	Returns:
+		Credentials, the obtained credential.
+	"""
+	home_dir = os.path.expanduser('~')
+	credential_dir = os.path.join(home_dir, '.credentials')
+	if not os.path.exists(credential_dir):
+		os.makedirs(credential_dir)
+	credential_path = os.path.join(credential_dir,
+								   'gmail-quickstart.json')
+
+	store = oauth2client.file.Storage(credential_path)
+	credentials = store.get()
+	if not credentials or credentials.invalid:
+		flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
+		flow.user_agent = APPLICATION_NAME
+		if flags:
+			credentials = tools.run_flow(flow, store, flags)
+		else: # Needed only for compatability with Python 2.6
+			credentials = tools.run(flow, store)
+		print ('Storing credentials to ' + credential_path)
+	return credentials
+
 import base64
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
@@ -9,10 +52,61 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import mimetypes
-import os
+from httplib2 import Http
+
 from apiclient import errors
+
+from apiclient.discovery import build
+credentials = get_credentials()
+service = build('gmail', 'v1', http=credentials.authorize(Http()))
+
+def SendMessage(service, user_id, message):
+	"""Send an email message.
+
+  Args:
+	service: Authorized Gmail API service instance.
+	user_id: User's email address. The special value "me"
+	can be used to indicate the authenticated user.
+	message: Message to be sent.
+
+  Returns:
+	Sent Message.
+  """
+	try:
+		message = (service.users().messages().send(userId=user_id, body=message)
+			   .execute())
+		print ('Message Id: %s' % message['id'])
+		return message
+	except errors.HttpError as error:
+		print ('An error occurred: %s' % error)
+
+
+def CreateMessage(sender, to, subject, message_text):
+	"""Create a message for an email.
+
+  	Args:
+	sender: Email address of the sender.
+	to: Email address of the receiver.
+	subject: The subject of the email message.
+	message_text: The text of the email message.
+
+  	Returns:
+	An object containing a base64 encoded email object.
+	"""
+
+	message = MIMEText(message_text)
+	message['to'] = to
+	message['from'] = sender
+	message['subject'] = subject
+	return {'raw': base64.b64encode(message.as_string())}
+
+from flask import Flask, request, redirect
+import twilio.twiml
+from twilio.rest import TwilioRestClient
+import requests
  
 MAX_CHARS = 1550
+
 
 class Etxt_server():
 	def setup(self):
@@ -39,21 +133,11 @@ class Etxt_server():
 
 	def sendEmail (self, msg):
 		#compose the email first
-		message = MIMEText(msg)
-		message['to'] = self.toemail
-		message['from'] = self.fromemail 
-		message['subject'] = "subject"
-  		message = {'raw': base64.urlsafe_b64encode(message.as_string())}
+		message = CreateMessage(self.fromemail, self.toemail, "subject", msg)
 
 		#now send the email
-		try:
-			message = (service.users().messages().send(userId=user_id, body=message)
-               .execute())
-			print 'Message Id: %s' % message['id']
-			return message
-		except errors.HttpError, error:
-			print 'An error occurred: %s' % error
-
+		status = SendMessage(service, 'me', message)
+		return status
 		"""
 		print ("Trying to send an email")
 		#post the HTTP request to send the email
@@ -85,7 +169,7 @@ class Etxt_server():
 
 			for i in range (1, index+1):
 				if (i < 10):
-		   			counter = '0' + str(i) + '/' + strMaxIndex
+					counter = '0' + str(i) + '/' + strMaxIndex
 				else:
 					counter + str(i) + '/' + strMaxIndex
 				brokenMsg.append(counter + msg[wordIndex:wordIndex+MAX_CHARS])
