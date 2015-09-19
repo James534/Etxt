@@ -2,6 +2,14 @@ from flask import Flask, request, redirect
 import twilio.twiml
 from twilio.rest import TwilioRestClient
 import requests
+import base64
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import mimetypes
+import os
  
 MAX_CHARS = 1550
 
@@ -15,8 +23,8 @@ class Etxt_server():
 		self.client = TwilioRestClient(self.sid, self.auth)
 		self.domain = f.readline().strip('\n')
 		self.mgkey = f.readline().strip('\n')
-		self.fromemail = f.readline().strip('\n')
-		self.toemail = f.readline().strip('\n')
+		self.fromemail = sadmansazidk@gmail.com
+		self.toemail = sadmansazidk@gmail.com
 
 	#responces have to be less than 1562 characters
 	def text(self, msg):
@@ -26,8 +34,26 @@ class Etxt_server():
 			from_=self.serverNumber)
 		#print (message.sid)
 		print ('texting', msg)
+	
 
 	def sendEmail (self, msg):
+		#compose the email first
+		message = MIMEText(msg)
+		message['to'] = self.toemail
+		message['from'] = self.fromemail 
+		message['subject'] = subject
+  		message = {'raw': base64.urlsafe_b64encode(message.as_string())}
+
+		#now send the email
+		try:
+			message = (service.users().messages().send(userId=user_id, body=message)
+               .execute())
+			print 'Message Id: %s' % message['id']
+			return message
+		except errors.HttpError, error:
+			print 'An error occurred: %s' % error
+
+		"""
 		print ("Trying to send an email")
 		#post the HTTP request to send the email
 		r = requests.post(
@@ -40,6 +66,7 @@ class Etxt_server():
 
 		#print the status of the request
 		print (r.text)
+		"""
 
 	def sendMail(self, msg):
 		if len(msg)+10 > MAX_CHARS:
