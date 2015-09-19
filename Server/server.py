@@ -76,7 +76,7 @@ class Etxt_server():
 			for w in brokenMsg:
 				self.text(w)
 		else:
-			self.text(ES.startingHash + ES.endingHash + msg)
+			self.text(msg)
 			print ("EOF")
 
 ES = Etxt_server()
