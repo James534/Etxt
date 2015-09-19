@@ -51,7 +51,7 @@ public class MainActivity extends ActionBarActivity {
     private void sendTextMessage() {
         try {
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage("+16473603304", null, MainActivityFragment.getText()
+            smsManager.sendTextMessage("+16473603286", null, MainActivityFragment.getText()
                     ,null,null);
             showToast("Text Sent");
         } catch (Exception e) {
