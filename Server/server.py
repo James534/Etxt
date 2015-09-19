@@ -10,6 +10,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import mimetypes
 import os
+from apiclient import errors
  
 MAX_CHARS = 1550
 
@@ -23,8 +24,8 @@ class Etxt_server():
 		self.client = TwilioRestClient(self.sid, self.auth)
 		self.domain = f.readline().strip('\n')
 		self.mgkey = f.readline().strip('\n')
-		self.fromemail = sadmansazidk@gmail.com
-		self.toemail = sadmansazidk@gmail.com
+		self.fromemail = "sadmansazidk@gmail.com"
+		self.toemail = "sadmansazidk@gmail.com"
 
 	#responces have to be less than 1562 characters
 	def text(self, msg):
@@ -41,7 +42,7 @@ class Etxt_server():
 		message = MIMEText(msg)
 		message['to'] = self.toemail
 		message['from'] = self.fromemail 
-		message['subject'] = subject
+		message['subject'] = "subject"
   		message = {'raw': base64.urlsafe_b64encode(message.as_string())}
 
 		#now send the email
