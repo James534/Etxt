@@ -1,0 +1,79 @@
+Hey Everyone,
+
+We wanted to let you know about all the prizes you can win at Hack the North. As a reminder, you must register for the event on devpost (http://hackthenorth2015.devpost.com) in order to submit your projects and qualify for prizes.
+
+Free Domains!
+
+Each attendee gets a free .co domain name! To get your free domain, head over to https://pop.co/hackthenorth and enter the code COthenorth
+
+Here are all the prizes that will be offered at the event by our sponsors:
+
+
+Best Hack on a .CO Domain
+
+.CO will award a $500 gift card prize to the team with the best hack build on a .CO domain.
+
+Best Game
+Big Viking Games will award a Razer DeathStalker Chroma and a Razer DeathAdder Chroma to each member of the team with the best game.
+
+Best Hack to Inspire Adventures 
+Yelp will award a Leap Motion to each member of the team with the best hack that inspires adventures.
+
+Best Pebble App
+Pebble will award a Pebble Time smartwatch to each member of the team that creates the most unique, technically impressive, or creative Pebble application.
+
+Best Reverse Engineering Hack
+Affirm, Inc will award a $1000 cash prize to the team with the best reverse engineered hack
+
+Best Social Impact
+Magnet Forensics will award a Raspberry Pi 2 Model B to each member of the team with the best hack focussed on creating social impact. 
+
+Most Innovative Solution using Azure
+Microsoft will award a Dell Venue 10 Pro 5055 tablet to each member of the team with the most innovative hack using Azure.
+
+Most Innovative use of Braintree or Paypal
+Paypal/Braintree will award a smart home automation bundle consisting of a Netatmo Weather Station, a Philips Hue Wireless Lighting starter pack and an August Smart Lock to each member of the team that that best utilizes the Braintree or Paypal API.
+
+1517 Grant
+Submit an application to receive a $1k grant from 1517, form to apply (more info at the event).
+
+Bloomberg API
+Bloomberg will award a "Hacker's Grab Bag" containing an assortment of prizes including 2 Oculus Rift DK2s, 2 Raspberry Pi dev kits and 2 Arduino dev kits to the team that best utilizes the Bloomberg API.
+
+Coinbase API
+Coinbase will award $1000 in bitcoin and a guaranteed interview for an internship at Coinbase to the team that best utilizes the Coinbase API.
+
+Dropbox API
+Dropbox will award a pair of Beats in-ear headphones and 5GB of Dropbox space to each member of the team that best utilizes the Dropbox API.
+
+Facebook API
+Facebook will award an all expenses paid trip to Facebook California's headquarters to compete in the Facebook Global Hackathon Finals on November 13th and 14th 2015 to each member of the team that best utilizes the Facebook's API (Facebook, Messenger or Instagram).
+
+Firebase API
+Firebase will award a custom Firebase trophy and 6 months of Firebase Blaze credit to the team that best utilizes the Firebase API.
+
+Google Cloud Platform API 
+Google will award a Motorola 360 Android Wear smartwatches to each member of the team as well as $1000 in Google Cloud Platform credit to the team that best utilizes the Google Cloud Platform.
+
+indico API
+indico will award $1000 in indico API credits and $500 cash to the team that best utilizes the indico machine learning API.
+
+Intuit API
+Intuit will award $2000 and eliminate the first tier of Intuit's interview process for a full-time/co-op position to the team that best utilizes the Intuit API.
+
+Moxtra API
+Moxtra will award $1000 to the team that best utilizes the Moxtra API with an emphasis on collaboration.
+
+SupportKit API
+SupportKit will award an Ollie app-enabled racing bot to each member of the team that best utilizes SupportKit in their hack.
+
+Uber API
+Uber will award $250 in Uber credit to the team that best utilizes the Uber API.
+
+Urthecast Platform API
+Urthecast will award paid flights and hotel for each member of the team to a Urthecast Developer Summit of their choice and $500 Urthecast Platform credit to the team that best utilizes the Urthecast Platform.
+
+
+Once again, you can find more information at http://hackthenorth2015.devpost.com/
+
+Team Hack the North
