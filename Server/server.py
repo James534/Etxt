@@ -1,4 +1,5 @@
 import httplib2
+import email
 import os
 
 from apiclient import discovery
@@ -60,6 +61,14 @@ from apiclient.discovery import build
 credentials = get_credentials()
 service = build('gmail', 'v1', http=credentials.authorize(Http()))
 
+def GetMessage(service, user_id, msg_id):
+	try:
+		message = service.users().messages().get(userId=user_id,id=msg_id).execute()
+		
+		return message
+	except errors.HttpError as error:
+		print ("An error has occurred: %s" % error)
+
 def SendMessage(service, user_id, message):
 	"""Send an email message.
 
@@ -75,10 +84,34 @@ def SendMessage(service, user_id, message):
 	try:
 		message = (service.users().messages().send(userId=user_id, body=message)
 			   .execute())
-		print ('Message Id: %s' % message['id'])
+		print ('Message Id: %s' % message['snippet'])
 		return message
 	except errors.HttpError as error:
 		print ('An error occurred: %s' % error)
+
+def GetMimeMessage(service, user_id, msg_id):
+	"""Get a Message and use it to create a MIME Message.
+
+ 	Args:
+    service: Authorized Gmail API service instance.
+    user_id: User's email address. The special value "me"
+    can be used to indicate the authenticated user.
+    msg_id: The ID of the Message required.
+
+  Returns:
+    A MIME Message, consisting of data from Message.
+	"""
+	try:
+		message = service.users().messages().get(userId=user_id, id=msg_id,
+			format='raw').execute()
+
+		msg_str = base64.urlsafe_b64decode(message['raw'].encode('ASCII'))
+
+		mime_msg = email.message_from_string(msg_str)
+
+		return mime_msg
+	except errors.HttpError, error:
+		print 'An error occurred: %s' % error
 
 
 def CreateMessage(sender, to, subject, message_text):
@@ -99,6 +132,40 @@ def CreateMessage(sender, to, subject, message_text):
 	message['from'] = sender
 	message['subject'] = subject
 	return {'raw': base64.b64encode(message.as_string())}
+
+def ListMessagesMatchingQuery(service, user_id, query=''):
+	"""List all Messages of the user's mailbox matching the query.
+
+    Args:
+        service: Authorized Gmail API service instance.
+        user_id: User's email address. The special value "me"
+        can be used to indicate the authenticated user.
+        query: String used to filter messages returned.
+        Eg.- 'from:user@some_domain.com' for Messages from a particular sender.
+
+    Returns:
+        List of Messages that match the criteria of the query. Note that the
+        returned list contains Message IDs, you must use get with the
+        appropriate ID to get the details of a Message.
+	"""
+	try:
+		response = service.users().messages().list(userId=user_id, 
+			q=query).execute()
+		messages = []
+		if 'messages' in response:
+			messages.extend(response['messages'])
+
+		while 'nextPageToken' in response:
+			page_token = response['nextPageToken']
+			response = service.users().messages().list(userId=user_id, q=query, 
+                                         pageToken=page_token).execute()
+			messages.extend(response['messages'])
+
+		return messages
+	except errors.HttpError as error:
+		print ('An error occurred: %s' % error)
+
+
 
 from flask import Flask, request, redirect
 import twilio.twiml
@@ -132,9 +199,28 @@ class Etxt_server():
 			from_=self.serverNumber)
 		#print (message.sid)
 		print ('texting', msg)
-	
 
-	def sendEmail (self, msg):
+	def checkMail(self):
+		print ("Attempting to check for emails")
+		messages = ListMessagesMatchingQuery(service, 'me', 'is:unread after:2015/09/18')
+
+		for i in range(len(messages)):
+			#get the full message
+			message = GetMessage(service, 'me', messages[i]['id'])
+			print (message['snippet'])
+			#print (messages[message]['payload'])
+			#for i in messages[message].payload.headers:
+			"""
+				if messages[message].payload.headers[i].name == "From":
+					print ("From: " + messages[message].payload.headers[i].value)
+				elif messages[message].payload.headers[i].name == "Subject":
+					print ("Subject: " + messages[message].payload.headers[i].value)
+				#print (messages[mess
+			"""
+			#print (message)
+
+	def sendEmail(self, msg):
+		print ("Attempting to dissect the message and send it: " + msg)
 		#parse the target email and the subject
 		target = msg[:msg.index('\n')]
 		msg = msg[msg.index('\n')+1:]
@@ -213,6 +299,9 @@ def hello_monkey():
 	#resp.message(rq[0].body)
 	#resp.message(email)
 	#return str(resp)
+	if msg == 'check':
+		ES.checkMail()
+		return "eof"
 
 	if not ES.processingEmail:
 		if msg[2] == "/":
@@ -239,7 +328,6 @@ def hello_monkey():
 		else:			
 			ES.recievedIndex [int(msg[:2])] = True				#turn the current index to true
 			ES.recievedPieces[int(msg[:2])] = msg[5:]
-
 
 	ES.text(rq[0].body)
 	#send an email

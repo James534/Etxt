@@ -126,7 +126,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
             String smsMessageStr = address + "\n";
             smsMessageStr += smsMessage;
-            Toast.makeText(getActivity(), smsMessageStr, Toast.LENGTH_SHORT).show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -140,9 +140,18 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         if (indexBody < 0 || !smsInboxCursor.moveToFirst()) return;
         arrayAdapter.clear();
         do {
-            String str = "SMS From: " + smsInboxCursor.getString(indexAddress) +
-                    "\n" + smsInboxCursor.getString(indexBody) + "\n";
-            arrayAdapter.add(str);
+            if (smsInboxCursor.getString(indexAddress).equals("+16473603583")) {
+                String from = smsInboxCursor.getString(indexBody).substring(39,smsInboxCursor.getString(indexBody).length());
+                String[] parts = from.split("\n");
+                String str = "";
+                if (parts.length > 2) {
+                    str += "From: " + parts[0] + "\n";
+                    str += "Subject: " + parts[1];
+                    str += smsInboxCursor.getString(indexBody).substring(39 + parts[0].length() + parts[1].length(),smsInboxCursor.getString(indexBody).length());
+                    arrayAdapter.add(str);
+                }
+
+            }
         } while (smsInboxCursor.moveToNext());
     }
 
