@@ -3,6 +3,7 @@ package ca.uwaterloo.etxt;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -67,12 +68,31 @@ public class MainActivity extends ActionBarActivity {
 
         try {
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage("+16473603583", null, message
-                    ,null,null);
+            String[] brokenString = chopString(message);
+            for (int i = 0; i < brokenString.length; i++) {
+                Log.e("HO",brokenString[i]);
+                smsManager.sendTextMessage("+16473603583", null, brokenString[i]
+                        , null, null);
+            }
             showToast("Text Sent");
         } catch (Exception e) {
             showToast("Text Failed To Send");
             e.printStackTrace();
+        }
+    }
+
+    private String[] chopString(String message) {
+        if (message.length() <= 1550) return new String[] { message };
+        else {
+            String[] chop = new String[message.length() / 1550 + 1];
+            int counter = 0;
+            while (message.length() > 1550) {
+                chop[counter] = message.substring(0,1551);
+                message = message.substring(1551,message.length());
+                counter++;
+            }
+            chop[counter] = message;
+            return chop;
         }
     }
 }
