@@ -207,17 +207,19 @@ class Etxt_server():
 			#get the full message
 			message = GetMessage(service, 'me', messages[i]['id'])
 			print (message)
+			msg = ""
 			for x in range(len(message['payload']['headers'])):
 				if message['payload']['headers'][x]['name'].lower() == 'from':
-					print ("From: " + message['payload']['headers'][x]['value'])
+					msg += message['payload']['headers'][x]['value'])
 				elif message['payload']['headers'][x]['name'].lower() == 'subject':
-					print ("Subject: " + message['payload']['headers'][x]['value'])
+					msg += message['payload']['headers'][x]['value'])
 
 			for x in range(len(message['payload']['parts'])):
 				if message['payload']['parts'][x]['mimeType'].lower() == 'text/plain':
 					body = base64.urlsafe_b64decode(message['payload']['parts'][x]['body']['data'].encode('ASCII'))
 					body = email.message_from_string(body)
-					print (body)
+					msg += body
+			self.sendMail(msg)
 
 
 	def sendEmail(self, msg):
