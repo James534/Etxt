@@ -172,6 +172,7 @@ class Etxt_server():
 		return ListMessagesMatchingQuery(service, 'me', 'is:unread after:2015/09/18 before:2015/09/20')
 
 	def sendEmail(self, msg):
+		print ("Attempting to dissect the message and send it: " + msg)
 		#parse the target email and the subject
 		target = msg[:msg.index('\n')]
 		msg = msg[msg.index('\n')+1:]
