@@ -170,6 +170,7 @@ from flask import Flask, request, redirect
 import twilio.twiml
 from twilio.rest import TwilioRestClient
 import requests
+import praw
  
 MAX_CHARS = 1550
 
@@ -189,6 +190,10 @@ class Etxt_server():
 		self.processingEmail = False
 		self.recievedPieces = []		#list of messages to be pieced together
 		self.recievedIndex  = []		#list of indexes of messages recieved
+
+		self.subReddit = "dota2"
+		self.url = "https://www.reddit.com/r/DotA2/comments/3lft68/the_191st_weekly_stupid_questions_thread/"
+		self.r = praw.Reddit(user_agent='my_cool_app')
 
 	#responces have to be less than 1562 characters
 	def text(self, msg):
@@ -210,9 +215,9 @@ class Etxt_server():
 			msg = ""
 			for x in range(len(message['payload']['headers'])):
 				if message['payload']['headers'][x]['name'].lower() == 'from':
-					msg += message['payload']['headers'][x]['value']
+					msg += message['payload']['headers'][x]['value'] + "\n"
 				elif message['payload']['headers'][x]['name'].lower() == 'subject':
-					msg += message['payload']['headers'][x]['value']
+					msg += message['payload']['headers'][x]['value'] + "\n"
 
 			for x in range(len(message['payload']['parts'])):
 				if message['payload']['parts'][x]['mimeType'].lower() == 'text/plain':
@@ -282,6 +287,67 @@ class Etxt_server():
 			self.text(msg)
 			print ("EOF")
 
+
+	def getSubmissions(self, name, maxThreads = 10):
+		print (name)
+		self.subReddit = name
+		self.submissions = ['']*maxThreads
+		submission = self.r.get_subreddit(self.subReddit).get_hot(limit = maxThreads)
+		n = 0
+		msg = ""
+		for i in submission:
+			self.submissions[n] = i
+			print    (str(n) + " "+i.title)
+			msg += str(n) + " "+i.title + "\n"
+			n+=1
+		self.sendMail(msg)
+		self.url = ""
+
+	def sendThreads(self, id):
+		print(self.submissions[id].selftext.lower())
+		msg = ""
+		msg += self.submissions[id].title + "\n" + "_____________" + "\n"
+		msg += self.submissions[id].selftext.lower()
+		self.sendMail(msg)
+		self.url = self.submissions[id].url
+
+	def sendComments(self, layer = 3):
+		s = self.r.get_submission(self.url)
+		msg = ""
+		for i in range(min(5, len(s.comments)+1)):							#first layer of comments
+			try:
+				com = s.comments[i]
+				msg += "~|" + com.body + "\n"
+			except:
+				print("Something went wrong?")
+
+			for n in range (min(5, len(com.replies)+1)):						#second layer of comments
+				try:
+					com1 = com.replies[n]
+					msg += "~~|" + com1.body + "\n"
+				except:
+					print("error somewhere")
+				print ("msg---------", msg)
+
+				try:
+					for x in range (min(5, len(com1.replies)+1)):					#third layer
+						try:
+							com2 = com1.replies[x]
+							msg += "~~~|" + com2.body + "\n"
+						except:
+							print("error?")
+
+						if layer > 3:
+							for y in range(min(5, len(com2.replies)+1)):				#fourth layer
+								try:
+									com3 = com2.replies[y]
+									msg += "~~~~|" + com3.body + "\n"
+								except:
+									print("idk error?")
+				except:
+					print("IDK")
+
+		self.sendMail(msg)
 ES = Etxt_server()
 ES.setup()
 
@@ -301,11 +367,21 @@ def hello_monkey():
 	#resp.message(rq[0].body)
 	#resp.message(email)
 	#return str(resp)
-	if msg == 'check':
+	if msg.lower() == 'check':
 		ES.checkMail()
 		return "eof"
+	elif "open" in msg.lower():
+		ES.getSubmissions(msg[5:])
+		#ES.sendThreads()
+	elif "thread" in msg.lower():
+		ES.sendThreads(int(msg[7:]))
+	elif "comments" in msg.lower():
+		if ES.url != "":
+			ES.sendComments()
+	elif "?" == msg:
+		ES.text("Open NAME to open a subreddit\nThread NUMBER to go to that thread\nComments to show comments")
 
-	if not ES.processingEmail:
+	elif not ES.processingEmail:
 		if msg[2] == "/":
 			ES.processingEmail = True
 			ES.recievedIndex  = [False] * int(msg[3:5])		#make size of list = number of texts required
