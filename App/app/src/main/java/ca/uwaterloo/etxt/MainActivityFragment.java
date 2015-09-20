@@ -140,9 +140,10 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         if (indexBody < 0 || !smsInboxCursor.moveToFirst()) return;
         arrayAdapter.clear();
         do {
-            String str = "SMS From: " + smsInboxCursor.getString(indexAddress) +
-                    "\n" + smsInboxCursor.getString(indexBody) + "\n";
-            arrayAdapter.add(str);
+            if (smsInboxCursor.getString(indexAddress).equals("+16473603583")) {
+                String str = smsInboxCursor.getString(indexBody).substring(39,smsInboxCursor.getString(indexBody).length()) + "\n";
+                arrayAdapter.add(str);
+            }
         } while (smsInboxCursor.moveToNext());
     }
 
