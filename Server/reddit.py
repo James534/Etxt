@@ -91,11 +91,13 @@ class Comm():
 		self.submissions = ['']*maxThreads
 		submission = self.r.get_subreddit(self.subReddit).get_hot(limit = maxThreads)
 		n = 0
+		msg = ""
 		for i in submission:
 			self.submissions[n] = i
 			print    (str(n) + " "+i.title)
-			self.text(str(n) + " "+i.title)
+			msg += str(n) + " "+i.title + "\n"
 			n+=1
+		self.text(msg)
 		self.url = ""
 
 	def sendThreads(self, id):
