@@ -43,8 +43,9 @@ class Comm():
 		self.clientNumber = f.readline().strip('\n')
 		self.serverNumber = f.readline().strip('\n')
 		self.client = TwilioRestClient(self.sid, self.auth)
-		self.subReddit = ""
-		self.url = ""
+		self.subReddit = "dota2"
+		self.url = "https://www.reddit.com/r/DotA2/comments/3lft68/the_191st_weekly_stupid_questions_thread/"
+		self.r = praw.Reddit(user_agent='my_cool_app')
 
 	#responces have to be less than 1562 characters
 	def text(self, msg):
@@ -84,9 +85,9 @@ class Comm():
 
 	def getSubmissions(self, name, maxThreads = 10):
 		print (name)
-		self.r = praw.Reddit(user_agent='my_cool_app')
+		self.subReddit = name
 		self.submissions = ['']*maxThreads
-		submission = r.get_subreddit(name).get_hot(limit = maxThreads)
+		submission = r.get_subreddit(self.subReddit).get_hot(limit = maxThreads)
 		n = 0
 		for i in submission:
 			self.submissions[n] = i
@@ -94,10 +95,12 @@ class Comm():
 			self.text(str(n) + " "+i.title)
 			n+=1
 		self.url = ""
+
 	def sendThreads(self, id):
 		print(self.submissions[id].selftext.lower())
 		self.text (self.submissions[id].selftext.lower())
 		self.url = self.submissions[id].url
+		
 	def sendComments(self):
 		s = self.r.get_submission(self.url)
 		msg = ""
@@ -107,7 +110,7 @@ class Comm():
 			for n in range (5):
 				com1 = com.replies[n]
 				msg += "~~|" + com1.body + "\n"
-				
+
 		sendMail(msg)
 
 #s = r.get_submission(y)
