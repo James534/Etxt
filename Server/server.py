@@ -320,14 +320,14 @@ class Etxt_server():
 		for i in range(min(5, len(s.comments)+1)):							#first layer of comments
 			try:
 				com = s.comments[i]
-				msg += "~|" + com.body + "\n"
+				msg += "~|" + com.body + "---\n"
 			except:
 				print("Something went wrong?")
 
 			for n in range (min(5, len(com.replies)+1)):						#second layer of comments
 				try:
 					com1 = com.replies[n]
-					msg += "~~|" + com1.body + "\n"
+					msg += "~~|" + com1.body + "---\n"
 				except:
 					print("error somewhere")
 				print ("msg---------", msg)
@@ -336,7 +336,7 @@ class Etxt_server():
 					for x in range (min(5, len(com1.replies)+1)):					#third layer
 						try:
 							com2 = com1.replies[x]
-							msg += "~~~|" + com2.body + "\n"
+							msg += "~~~|" + com2.body + "---\n"
 						except:
 							print("error?")
 
@@ -344,7 +344,7 @@ class Etxt_server():
 							for y in range(min(5, len(com2.replies)+1)):				#fourth layer
 								try:
 									com3 = com2.replies[y]
-									msg += "~~~~|" + com3.body + "\n"
+									msg += "~~~~|" + com3.body + "---\n"
 								except:
 									print("idk error?")
 				except:
