@@ -120,6 +120,9 @@ class Etxt_server():
 		self.mgkey = f.readline().strip('\n')
 		self.fromemail = "sadmansazidk@gmail.com"
 		self.toemail = "sadmansazidk@gmail.com"
+		self.processingEmail = False
+		self.recievedPieces = []		#list of messages to be pieced together
+		self.recievedIndex  = []		#list of indexes of messages recieved
 
 	#responces have to be less than 1562 characters
 	def text(self, msg):
@@ -192,9 +195,6 @@ class Etxt_server():
 ES = Etxt_server()
 ES.setup()
 
-processingEmail = False
-recievedPieces = []		#list of messages to be pieced together
-recievedIndex  = []		#list of indexes of messages recieved
 
 app = Flask(__name__)
 @app.route("/", methods=['GET', 'POST'])
@@ -213,31 +213,31 @@ def hello_monkey():
 	#resp.message(email)
 	#return str(resp)
 
-	if not processingEmail:
+	if not ES.processingEmail:
 		if msg[2] == "/":
-			processingEmail = True
-			recievedIndex  = [False] * int(msg[3:5])		#make size of list = number of texts required
-			recievedPieces = [""] * int(msg[3:5])			#same with the text pieces
-			recievedIndex [int(msg[:2])] = True				#turn the current index to true
-			recievedPieces[int(msg[:2])] = msg[5:]
+			ES.processingEmail = True
+			ES.recievedIndex  = [False] * int(msg[3:5])		#make size of list = number of texts required
+			ES.recievedPieces = [""] * int(msg[3:5])			#same with the text pieces
+			ES.recievedIndex [int(msg[:2])] = True				#turn the current index to true
+			ES.recievedPieces[int(msg[:2])] = msg[5:]
 		else:
 			ES.sendEmail(msg)
 	else:
 		done = True
-		for i in range (len(recievedIndex)):
-			if recievedIndex[i] == False:
+		for i in range (len(ES.recievedIndex)):
+			if ES.recievedIndex[i] == False:
 				done = False
 				break
 		if done:
 			finalMsg = ""
-			for texts in recievedPieces:
+			for texts in ES.recievedPieces:
 				finalMsg += texts
 			ES.sendEmail(finalMsg)
-			processingEmail = False
+			ES.processingEmail = False
 
 		else:			
-			recievedIndex [int(msg[:2])] = True				#turn the current index to true
-			recievedPieces[int(msg[:2])] = msg[5:]
+			ES.recievedIndex [int(msg[:2])] = True				#turn the current index to true
+			ES.recievedPieces[int(msg[:2])] = msg[5:]
 
 
 	ES.text(rq[0].body)
@@ -247,7 +247,4 @@ def hello_monkey():
 	return "eof"
  
 if __name__ == "__main__":
-	processingEmail = False
-	recievedPieces = []		#list of messages to be pieced together
-	recievedIndex  = []		#list of indexes of messages recieved
 	app.run(debug=True)
