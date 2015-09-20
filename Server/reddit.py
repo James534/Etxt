@@ -103,7 +103,7 @@ class Comm():
 		self.text (self.submissions[id].selftext.lower())
 		self.url = self.submissions[id].url
 
-	def sendComments(self):
+	def sendComments(self, layer = 3):
 		s = self.r.get_submission(self.url)
 		msg = ""
 		for i in range(5):							#first layer of comments
@@ -127,13 +127,14 @@ class Comm():
 						msg += "~~~|" + com2.body + "\n"
 					except:
 						print("error?")
-
-					for y in range(5):				#fourth layer
-						try:
-							com3 = com2.replies[y]
-							msg += "~~~~|" + com3.body + "\n"
-						except:
-							print("idk error?")
+						
+					if layer > 3:
+						for y in range(5):				#fourth layer
+							try:
+								com3 = com2.replies[y]
+								msg += "~~~~|" + com3.body + "\n"
+							except:
+								print("idk error?")
 
 		self.sendMail(msg)
 
