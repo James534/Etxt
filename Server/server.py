@@ -247,4 +247,7 @@ def hello_monkey():
 	return "eof"
  
 if __name__ == "__main__":
+	processingEmail = False
+	recievedPieces = []		#list of messages to be pieced together
+	recievedIndex  = []		#list of indexes of messages recieved
 	app.run(debug=True)
