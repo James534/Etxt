@@ -4,17 +4,19 @@ import twilio.twiml
 from twilio.rest import TwilioRestClient
 import requests
 
-r = praw.Reddit(user_agent='my_cool_app')
-submissions = r.get_subreddit("dota2").get_hot(limit=10)
-y = ['']*11
-i = 0
-for x in submissions:
-	txt = x.selftext.lower()
-	print x
-	y[i] = x
-	i+=1
-	print("______________")
-	print(txt)
+MAX_CHARS = 1550
+
+#r = praw.Reddit(user_agent='my_cool_app')
+#submissions = r.get_subreddit("dota2").get_hot(limit=10)
+#y = ['']*11
+#i = 0
+#for x in submissions:
+	#txt = x.selftext.lower()
+	#print x
+	#y[i] = x
+	#i+=1
+	#print("______________")
+	#rint(txt)
 	#flat_comments = praw.helpers.flatten_tree(x.comments)
 	#for comment in x.comments:#flat_comments:
 #		print comment
@@ -104,10 +106,14 @@ class Comm():
 	def sendComments(self):
 		s = self.r.get_submission(self.url)
 		msg = ""
-		for i in range(5):
-			com = s.comments[i]
-			msg += "~|" + com.body + "\n"
-			for n in range (5):
+		for i in range(5):							#first layer of comments
+			try:
+				com = s.comments[i]
+				msg += "~|" + com.body + "\n"
+			except:
+				print("Something went wrong?")
+
+			for n in range (5):						#second layer of comments
 				try:
 					com1 = com.replies[n]
 					msg += "~~|" + com1.body + "\n"
@@ -115,7 +121,21 @@ class Comm():
 					print("error somewhere")
 				print ("msg---------", msg)
 
-		sendMail(msg)
+				for x in range(5):					#third layer
+					try:
+						com2 = com1.replies[x]
+						msg += "~~~|" + com2.body + "\n"
+					except:
+						print("error?")
+
+					for y in range(5):				#fourth layer
+						try:
+							com3 = com2.replies[y]
+							msg += "~~~~|" + com3.body + "\n"
+						except:
+							print("idk error?")
+
+		self.sendMail(msg)
 
 #s = r.get_submission(y)
 #for x in range (10):
