@@ -213,13 +213,12 @@ class Etxt_server():
 				elif message['payload']['headers'][x]['name'].lower() == 'subject':
 					print ("Subject: " + message['payload']['headers'][x]['value'])
 
-			for x in range(len(message['parts'])
-				if message['parts'][x]['mimeType'].lower() == 'text/plain':
-					body = base64.urlsafe_b64decode(message['parts'][x]['body']['data'].encode('ASCII'))
+			for x in range(len(message['payload']['parts'])):
+				if message['payload']['parts'][x]['mimeType'].lower() == 'text/plain':
+					body = base64.urlsafe_b64decode(message['payload']['parts'][x]['body']['data'].encode('ASCII'))
 					body = email.message_from_string(body)
 					print (body)
 
-			#print (message)
 
 	def sendEmail(self, msg):
 		print ("Attempting to dissect the message and send it: " + msg)
