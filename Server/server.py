@@ -84,7 +84,6 @@ def SendMessage(service, user_id, message):
 	try:
 		message = (service.users().messages().send(userId=user_id, body=message)
 			   .execute())
-		print ('Message Id: %s' % message['snippet'])
 		return message
 	except errors.HttpError as error:
 		print ('An error occurred: %s' % error)
@@ -207,13 +206,17 @@ class Etxt_server():
 		for i in range(len(messages)):
 			#get the full message
 			message = GetMessage(service, 'me', messages[i]['id'])
-			print (message['payload'])
-			for x in range(len(message['payload']['headers']):
-				if message['payload']['headers'][i]['name'] == "From":
-					print ("From: " + message['payload']['headers'][i]['value'])
-				elif message['payload']['headers'][i]['name'] == "Subject":
-					print ("Subject: " + message['payload']['headers'][i]['value'])
-			"""
+			print (message)
+			for x in range(len(message['payload']['headers'])):
+				if message['payload']['headers'][x]['name'].lower() == 'from':
+					print ("From: " + message['payload']['headers'][x]['value'])
+				elif message['payload']['headers'][x]['name'].lower() == 'subject':
+					print ("Subject: " + message['payload']['headers'][x]['value'])
+				elif message['payload']['headers'][x]['name'].lower() == 'body':
+					body = base64.urlsafe_b64decode(message['payload']['headers'][x]['value']['data'].encode('ASCII'))
+					body = email.message_from_string(body)
+					print (body)
+
 			#print (message)
 
 	def sendEmail(self, msg):
@@ -283,7 +286,6 @@ ES.setup()
 app = Flask(__name__)
 @app.route("/", methods=['GET', 'POST'])
 def hello_monkey():
-	"""Respond to incoming texts"""
 	#resp = twilio.twiml.Response()
 	rq = ES.client.messages.list();
 	print ("____MESSAGE____")
