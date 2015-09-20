@@ -43,6 +43,7 @@ class Comm():
 		self.clientNumber = f.readline().strip('\n')
 		self.serverNumber = f.readline().strip('\n')
 		self.client = TwilioRestClient(self.sid, self.auth)
+		self.subReddit = ""
 
 	#responces have to be less than 1562 characters
 	def text(self, msg):
@@ -79,6 +80,14 @@ class Comm():
 		else:
 			self.text(msg)
 			print ("EOF")
+
+	def getSubmissions(self, name, limit = 10):
+		r = praw.Reddit(user_agent='my_cool_app')
+		self.submissions = r.get_subreddit(name).get_hot(limit)
+	def sendThreads(self):
+		for i in self.submissions:
+			self.text(str(i) + i.title)
+
 ES = Comm()
 ES.setup()
 
@@ -91,7 +100,6 @@ def hello_monkey():
 	print ("____MESSAGE____")
 	msg = rq[0].body
 	print(msg)
-	print(len(rq))
 	#for x in range (0,5):
 	#for message in rq:
 	#	print (message.body)	
@@ -99,7 +107,11 @@ def hello_monkey():
 	#resp.message(email)
 	#return str(resp)
 
-	ES.text(rq[0].body)
+	if "open" in msg:
+		ES.getSubmissions(msg[5:])
+		sendThreads()
+
+	#ES.text(rq[0].body)
 	#send an email
 	#ES.sendEmail(rq[0].body)
 	#ES.sendMail(email)
