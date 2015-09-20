@@ -89,7 +89,7 @@ class Comm():
 		print (name)
 		self.subReddit = name
 		self.submissions = ['']*maxThreads
-		submission = r.get_subreddit(self.subReddit).get_hot(limit = maxThreads)
+		submission = self.r.get_subreddit(self.subReddit).get_hot(limit = maxThreads)
 		n = 0
 		for i in submission:
 			self.submissions[n] = i
