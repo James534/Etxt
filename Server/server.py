@@ -212,8 +212,10 @@ class Etxt_server():
 					print ("From: " + message['payload']['headers'][x]['value'])
 				elif message['payload']['headers'][x]['name'].lower() == 'subject':
 					print ("Subject: " + message['payload']['headers'][x]['value'])
-				elif message['payload']['headers'][x]['name'].lower() == 'body':
-					body = base64.urlsafe_b64decode(message['payload']['headers'][x]['value']['data'].encode('ASCII'))
+
+			for x in range(len(message['parts'])
+				if message['parts'][x]['mimeType'].lower() == 'text/plain':
+					body = base64.urlsafe_b64decode(message['parts'][x]['body']['data'].encode('ASCII'))
 					body = email.message_from_string(body)
 					print (body)
 
