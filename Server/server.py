@@ -169,7 +169,15 @@ class Etxt_server():
 
 	def checkMail(self):
 		print ("Attempting to check for emails")
-		return ListMessagesMatchingQuery(service, 'me', 'is:unread after:2015/09/18 before:2015/09/20')
+		messages = ListMessagesMatchingQuery(service, 'me', 'is:unread')
+
+		for message in messages:
+			for i in messages[message].payload.headers:
+				if messages[message].payload.headers[i].name == "from":
+					print ("From: " + messages[message].payload.headers[i].value)
+				elif messages[message].payload.headers[i].name == "subject":
+					print ("Subject: " + messages[message].payload.headers[i].value)
+			print ("Body: " + messages[message].payload.body)
 
 	def sendEmail(self, msg):
 		print ("Attempting to dissect the message and send it: " + msg)
@@ -252,7 +260,7 @@ def hello_monkey():
 	#resp.message(email)
 	#return str(resp)
 	if msg == 'check':
-		print(ES.checkMail())
+		ES.checkMail()
 		return "eof"
 
 	if not ES.processingEmail:
