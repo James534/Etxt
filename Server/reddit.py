@@ -59,7 +59,7 @@ class Comm():
 		print ('texting', msg)
 
 	def sendMail(self, msg):
-		if len(msg)+10 > MAX_CHARS:
+		if len(msg) > MAX_CHARS:
 			brokenMsg = []									#to hold all the broken down messages
 			index = len(msg)/MAX_CHARS + 1
 			maxIndex = index
@@ -103,7 +103,7 @@ class Comm():
 	def sendThreads(self, id):
 		print(self.submissions[id].selftext.lower())
 		msg = ""
-		msg += self.submissions[id].title + "\n"
+		msg += self.submissions[id].title + "\n" + "_____________" + "\n"
 		msg += self.submissions[id].selftext.lower()
 		self.sendMail(msg)
 		self.url = self.submissions[id].url
@@ -111,7 +111,7 @@ class Comm():
 	def sendComments(self, layer = 3):
 		s = self.r.get_submission(self.url)
 		msg = ""
-		for i in range(min(5, len(s.comments)+1):							#first layer of comments
+		for i in range(min(5, len(s.comments)+1)):							#first layer of comments
 			try:
 				com = s.comments[i]
 				msg += "~|" + com.body + "\n"
@@ -126,20 +126,23 @@ class Comm():
 					print("error somewhere")
 				print ("msg---------", msg)
 
-				for x in range (min(5, len(com1.replies)+1)):					#third layer
-					try:
-						com2 = com1.replies[x]
-						msg += "~~~|" + com2.body + "\n"
-					except:
-						print("error?")
+				try:
+					for x in range (min(5, len(com1.replies)+1)):					#third layer
+						try:
+							com2 = com1.replies[x]
+							msg += "~~~|" + com2.body + "\n"
+						except:
+							print("error?")
 
-					if layer > 3:
-						for y in range(min(5, len(com2.replies)+1)):				#fourth layer
-							try:
-								com3 = com2.replies[y]
-								msg += "~~~~|" + com3.body + "\n"
-							except:
-								print("idk error?")
+						if layer > 3:
+							for y in range(min(5, len(com2.replies)+1)):				#fourth layer
+								try:
+									com3 = com2.replies[y]
+									msg += "~~~~|" + com3.body + "\n"
+								except:
+									print("idk error?")
+				except:
+					print("IDK")
 
 		self.sendMail(msg)
 
