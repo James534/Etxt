@@ -100,6 +100,40 @@ def CreateMessage(sender, to, subject, message_text):
 	message['subject'] = subject
 	return {'raw': base64.b64encode(message.as_string())}
 
+def ListMessagesMatchingQuery(service, user_id, query=''):
+	"""List all Messages of the user's mailbox matching the query.
+
+    Args:
+        service: Authorized Gmail API service instance.
+        user_id: User's email address. The special value "me"
+        can be used to indicate the authenticated user.
+        query: String used to filter messages returned.
+        Eg.- 'from:user@some_domain.com' for Messages from a particular sender.
+
+    Returns:
+        List of Messages that match the criteria of the query. Note that the
+        returned list contains Message IDs, you must use get with the
+        appropriate ID to get the details of a Message.
+	"""
+	try:
+		response = service.users().messages().list(userId=user_id,
+			q=query).execute()
+		messages = []
+		if 'messages' in response:
+			messages.extend(response['messages'])
+
+		while 'nextPageToken' in response:
+			page_token = response['nextPageToken']
+			response = service.users().messages().list(userId=user_id, q=query,
+                                         pageToken=page_token).execute()
+			messages.extend(response['messages'])
+
+		return messages
+	except errors.HttpError as error:
+		print ('An error occurred: %s' % error)
+
+
+
 from flask import Flask, request, redirect
 import twilio.twiml
 from twilio.rest import TwilioRestClient
@@ -132,9 +166,12 @@ class Etxt_server():
 			from_=self.serverNumber)
 		#print (message.sid)
 		print ('texting', msg)
-	
 
-	def sendEmail (self, msg):
+	def checkMail(self):
+		print ("Attempting to check for emails")
+		return ListMessagesMatchingQuery(service, 'me', 'is:unread after:2015/09/18 before:2015/09/20')
+
+	def sendEmail(self, msg):
 		#parse the target email and the subject
 		target = msg[:msg.index('\n')]
 		msg = msg[msg.index('\n')+1:]
@@ -240,8 +277,10 @@ def hello_monkey():
 			ES.recievedIndex [int(msg[:2])] = True				#turn the current index to true
 			ES.recievedPieces[int(msg[:2])] = msg[5:]
 
-
-	ES.text(rq[0].body)
+	if rq[0].body == 'check':
+		print(ES.checkMail())
+	else:
+		ES.text(rq[0].body)
 	#send an email
 	#ES.sendEmail(rq[0].body)
 	#ES.sendMail(email)
