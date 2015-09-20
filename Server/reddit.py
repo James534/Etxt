@@ -179,7 +179,7 @@ def hello_monkey():
 	elif "Comments" in msg:
 		if ES.url != "":
 			ES.sendComments()
-	elif "Help" in msg:
+	elif "?" == msg:
 		ES.text("Open NAME to open a subreddit\nThread NUMBER to go to that thread\nComments to show comments")
 
 	#ES.text(rq[0].body)
