@@ -44,6 +44,7 @@ class Comm():
 		self.serverNumber = f.readline().strip('\n')
 		self.client = TwilioRestClient(self.sid, self.auth)
 		self.subReddit = ""
+		self.url = ""
 
 	#responces have to be less than 1562 characters
 	def text(self, msg):
@@ -83,7 +84,7 @@ class Comm():
 
 	def getSubmissions(self, name, maxThreads = 10):
 		print (name)
-		r = praw.Reddit(user_agent='my_cool_app')
+		self.r = praw.Reddit(user_agent='my_cool_app')
 		self.submissions = ['']*maxThreads
 		submission = r.get_subreddit(name).get_hot(limit = maxThreads)
 		n = 0
@@ -92,10 +93,36 @@ class Comm():
 			print    (str(n) + " "+i.title)
 			self.text(str(n) + " "+i.title)
 			n+=1
+		self.url = ""
 	def sendThreads(self, id):
 		print(self.submissions[id].selftext.lower())
 		self.text (self.submissions[id].selftext.lower())
+		self.url = self.submissions[id].url
+	def sendComments(self):
+		s = self.r.get_submission(self.url)
+		msg = ""
+		for i in range(5):
+			com = s.comments[i]
+			msg += "~|" + com.body + "\n"
+			for n in range (5):
+				com1 = com.replies[n]
+				msg += "~~|" + com1.body + "\n"
+				
+		sendMail(msg)
 
+#s = r.get_submission(y)
+#for x in range (10):
+#for comment in s.comments:
+#	comment = s.comments[x]
+	#print("===============")
+#	print(comment.author)
+#	print("------------")
+#	print(comment.body)
+#	print("------------")
+#	for cr in comment.replies:
+#		print ("  " + cr.body)
+#		for cr2 in cr.replies:
+#			print ("    " + cr2.body)
 
 ES = Comm()
 ES.setup()
@@ -121,6 +148,9 @@ def hello_monkey():
 		#ES.sendThreads()
 	elif "thread" in msg:
 		ES.sendThreads(int(msg[7:]))
+	elif "comments" in msg:
+		if ES.url != "":
+			ES.sendComments()
 
 	#ES.text(rq[0].body)
 	#send an email
