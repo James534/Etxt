@@ -49,9 +49,25 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void sendTextMessage() {
+        String message = MainActivityFragment.getText();
+        switch (message) {
+            case "No Receiver":
+                showToast("No Receiver");
+                return;
+            case "No Subject":
+                showToast("No Subject");
+                return;
+            case "No Message":
+                showToast("No Message");
+                return;
+            case "Invalid Receiver":
+                showToast("Invalid Receiver");
+                return;
+        }
+
         try {
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage("+16473603286", null, MainActivityFragment.getText()
+            smsManager.sendTextMessage("+16473603583", null, message
                     ,null,null);
             showToast("Text Sent");
         } catch (Exception e) {
