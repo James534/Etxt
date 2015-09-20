@@ -127,7 +127,7 @@ class Comm():
 						msg += "~~~|" + com2.body + "\n"
 					except:
 						print("error?")
-						
+
 					if layer > 3:
 						for y in range(5):				#fourth layer
 							try:
@@ -171,14 +171,16 @@ def hello_monkey():
 	#resp.message(email)
 	#return str(resp)
 
-	if "open" in msg:
+	if "Open" in msg:
 		ES.getSubmissions(msg[5:])
 		#ES.sendThreads()
-	elif "thread" in msg:
+	elif "Thread" in msg:
 		ES.sendThreads(int(msg[7:]))
-	elif "comments" in msg:
+	elif "Comments" in msg:
 		if ES.url != "":
 			ES.sendComments()
+	elif "Help" in msg:
+		ES.text("Open NAME to open a subreddit\nThread NUMBER to go to that thread\nComments to show comments")
 
 	#ES.text(rq[0].body)
 	#send an email
