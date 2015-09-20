@@ -210,15 +210,15 @@ class Etxt_server():
 			msg = ""
 			for x in range(len(message['payload']['headers'])):
 				if message['payload']['headers'][x]['name'].lower() == 'from':
-					msg += message['payload']['headers'][x]['value'])
+					msg += message['payload']['headers'][x]['value']
 				elif message['payload']['headers'][x]['name'].lower() == 'subject':
-					msg += message['payload']['headers'][x]['value'])
+					msg += message['payload']['headers'][x]['value']
 
 			for x in range(len(message['payload']['parts'])):
 				if message['payload']['parts'][x]['mimeType'].lower() == 'text/plain':
 					body = base64.urlsafe_b64decode(message['payload']['parts'][x]['body']['data'].encode('ASCII'))
 					body = email.message_from_string(body)
-					msg += body
+					msg += str(body)
 			self.sendMail(msg)
 
 
