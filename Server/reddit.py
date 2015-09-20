@@ -82,11 +82,13 @@ class Comm():
 			print ("EOF")
 
 	def getSubmissions(self, name, limit = 10):
+		print (name)
 		r = praw.Reddit(user_agent='my_cool_app')
 		self.submissions = r.get_subreddit(name).get_hot(limit)
-	def sendThreads(self):
 		for i in self.submissions:
+			print (str(i) + i.title)
 			self.text(str(i) + i.title)
+	#def sendThreads(self):
 
 ES = Comm()
 ES.setup()
@@ -109,7 +111,7 @@ def hello_monkey():
 
 	if "open" in msg:
 		ES.getSubmissions(msg[5:])
-		sendThreads()
+		#ES.sendThreads()
 
 	#ES.text(rq[0].body)
 	#send an email
