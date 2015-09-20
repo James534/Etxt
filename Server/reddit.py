@@ -81,13 +81,15 @@ class Comm():
 			self.text(msg)
 			print ("EOF")
 
-	def getSubmissions(self, name, limit = 10):
+	def getSubmissions(self, name, maxThreads = 10):
 		print (name)
 		r = praw.Reddit(user_agent='my_cool_app')
-		self.submissions = r.get_subreddit(name).get_hot(limit)
+		self.submissions = r.get_subreddit(name).get_hot(limit = maxThreads)
+		n = 0
 		for i in self.submissions:
-			print (str(i) + i.title)
-			self.text(str(i) + i.title)
+			print    (str(n) + " "+i.title)
+			self.text(str(n) + " "+i.title)
+			n+=1
 	#def sendThreads(self):
 
 ES = Comm()
