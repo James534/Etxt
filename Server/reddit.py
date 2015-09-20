@@ -100,7 +100,7 @@ class Comm():
 		print(self.submissions[id].selftext.lower())
 		self.text (self.submissions[id].selftext.lower())
 		self.url = self.submissions[id].url
-		
+
 	def sendComments(self):
 		s = self.r.get_submission(self.url)
 		msg = ""
@@ -108,8 +108,12 @@ class Comm():
 			com = s.comments[i]
 			msg += "~|" + com.body + "\n"
 			for n in range (5):
-				com1 = com.replies[n]
-				msg += "~~|" + com1.body + "\n"
+				try:
+					com1 = com.replies[n]
+					msg += "~~|" + com1.body + "\n"
+				except:
+					print("error somewhere")
+				print ("msg---------", msg)
 
 		sendMail(msg)
 
