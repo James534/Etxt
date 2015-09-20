@@ -372,7 +372,6 @@ def hello_monkey():
 	#return str(resp)
 	if msg.lower() == 'check':
 		ES.checkMail()
-		return "eof"
 	elif "open" in msg.lower():
 		ES.getSubmissions(msg[5:])
 		#ES.sendThreads()
