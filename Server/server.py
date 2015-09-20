@@ -207,7 +207,7 @@ class Etxt_server():
 		for i in range(len(messages)):
 			#get the full message
 			message = GetMessage(service, 'me', messages[i]['id'])
-			print (message['snippet'])
+			print (message['payload'])
 			#print (messages[message]['payload'])
 			#for i in messages[message].payload.headers:
 			"""
