@@ -30,6 +30,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             //this will update the UI with message
             MainActivityFragment inst = MainActivityFragment.instance();
             inst.updateList(smsMessageStr);
+            RedditActivityFragment inst2 = RedditActivityFragment.instance();
+            inst2.updateList(smsMessageStr);
         }
     }
 }
