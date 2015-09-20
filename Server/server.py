@@ -223,7 +223,10 @@ class Etxt_server():
 				if message['payload']['parts'][x]['mimeType'].lower() == 'text/plain':
 					body = base64.urlsafe_b64decode(message['payload']['parts'][x]['body']['data'].encode('ASCII'))
 					body = email.message_from_string(body)
-					msg += str(body)
+					try:
+						msg += str(body)
+					except:
+						msg += "Email was unable to be decoded"
 			self.sendMail(msg)
 
 
@@ -298,7 +301,7 @@ class Etxt_server():
 		for i in submission:
 			self.submissions[n] = i
 			print    (str(n) + " "+i.title)
-			msg += str(n) + " "+i.title + "\n"
+			msg += str(n) + " "+i.title + "---\n"
 			n+=1
 		self.sendMail(msg)
 		self.url = ""
@@ -407,7 +410,7 @@ def hello_monkey():
 			ES.recievedIndex [int(msg[:2])] = True				#turn the current index to true
 			ES.recievedPieces[int(msg[:2])] = msg[5:]
 
-	ES.text(rq[0].body)
+	#ES.text(rq[0].body)
 	#send an email
 	#ES.sendEmail(rq[0].body)
 	#ES.sendMail(email)
