@@ -93,7 +93,8 @@ class Comm():
 			self.text(str(n) + " "+i.title)
 			n+=1
 	def sendThreads(self, id):
-		text (self.submissions[id].selftext.lower)
+		print(self.submissions[id].selftext.lower())
+		self.text (self.submissions[id].selftext.lower())
 
 
 ES = Comm()
