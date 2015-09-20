@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ca.uwaterloo.etxt.SplashActivity" android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView android:text="Etxt" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:textSize="90sp" android:textColor="#fff"
+        android:id="@+id/textView3"
+        android:fontFamily="sans-serif-thin"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:id="@+id/button"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true"
+        android:onClick="buttonEmail"/>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Reddit"
+        android:id="@+id/button2"
+        android:layout_below="@+id/button"
+        android:layout_centerHorizontal="true"
+        android:onClick="buttonReddit"/>
+
+</LinearLayout>
