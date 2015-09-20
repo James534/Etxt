@@ -172,11 +172,11 @@ class Etxt_server():
 		messages = ListMessagesMatchingQuery(service, 'me', 'is:unread')
 
 		for message in messages:
-			for i in messages[message].payload.headers:
-				if messages[message].payload.headers[i].name == "from":
-					print ("From: " + messages[message].payload.headers[i].value)
-				elif messages[message].payload.headers[i].name == "subject":
-					print ("Subject: " + messages[message].payload.headers[i].value)
+			for i in messages[message].payload.headers.name:
+				if messages[message].payload.headers.name[i] == "from":
+					print ("From: " + messages[message].payload.headers.value[i])
+				elif messages[message].payload.headers.name[i] == "subject":
+					print ("Subject: " + messages[message].payload.headers.value[i])
 			print ("Body: " + messages[message].payload.body)
 
 	def sendEmail(self, msg):
