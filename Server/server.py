@@ -208,14 +208,11 @@ class Etxt_server():
 			#get the full message
 			message = GetMessage(service, 'me', messages[i]['id'])
 			print (message['payload'])
-			#print (messages[message]['payload'])
-			#for i in messages[message].payload.headers:
-			"""
-				if messages[message].payload.headers[i].name == "From":
-					print ("From: " + messages[message].payload.headers[i].value)
-				elif messages[message].payload.headers[i].name == "Subject":
-					print ("Subject: " + messages[message].payload.headers[i].value)
-				#print (messages[mess
+			for x in range(len(message['payload']['headers']):
+				if message['payload']['headers'][i]['name'] == "From":
+					print ("From: " + message['payload']['headers'][i]['value'])
+				elif message['payload']['headers'][i]['name'] == "Subject":
+					print ("Subject: " + message['payload']['headers'][i]['value'])
 			"""
 			#print (message)
 
