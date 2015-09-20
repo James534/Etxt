@@ -251,6 +251,9 @@ def hello_monkey():
 	#resp.message(rq[0].body)
 	#resp.message(email)
 	#return str(resp)
+	if msg == 'check':
+		print(ES.checkMail())
+		return "eof"
 
 	if not ES.processingEmail:
 		if msg[2] == "/":
@@ -278,10 +281,7 @@ def hello_monkey():
 			ES.recievedIndex [int(msg[:2])] = True				#turn the current index to true
 			ES.recievedPieces[int(msg[:2])] = msg[5:]
 
-	if rq[0].body == 'check':
-		print(ES.checkMail())
-	else:
-		ES.text(rq[0].body)
+	ES.text(rq[0].body)
 	#send an email
 	#ES.sendEmail(rq[0].body)
 	#ES.sendMail(email)
