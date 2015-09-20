@@ -132,8 +132,17 @@ class Etxt_server():
 	
 
 	def sendEmail (self, msg):
+		#parse the target email and the subject
+		target = msg[:msg.index('\n')]
+		msg = msg[:msg.index('\n')+1]
+		subject = msg[:msg.index('\n')]
+		msg = msg[:msg.index('\n')+1]
+
+		print ("Target", target)
+		print ("Subject", subject)
+
 		#compose the email first
-		message = CreateMessage(self.fromemail, self.toemail, "subject", msg)
+		message = CreateMessage(self.fromemail, target, subject, msg)
 
 		#now send the email
 		status = SendMessage(service, 'me', message)
@@ -162,9 +171,7 @@ class Etxt_server():
 				strMaxIndex = '0' + str(maxIndex)
 			else:
 				strMaxIndex = str(maxIndex)
-			#firstMsg = self.startingHash + msg[:MAX_CHARS]
-			#brokenMsg.append(firstMsg)
-			#index -= 1
+
 			wordIndex = 0
 
 			for i in range (1, index+1):
@@ -175,15 +182,6 @@ class Etxt_server():
 				brokenMsg.append(counter + msg[wordIndex:wordIndex+MAX_CHARS])
 				wordIndex += MAX_CHARS
 
-		#index = MAX_CHARS-6								#since im taking max_chars-6 characters in the first message, make the index max_chars-6
-		#length = len(msg) + 10 - MAX_CHARS-6			#current length of the email
-		#words = ES.startingHash + msg[0:MAX_CHARS-6]	#the first message to be sent
-		#brokenMsg.append(words)							#add the first message to the list 
-		#for x in range (0, (len(msg)+10)/MAX_CHARS):		#+6 because 1 from the | character and 5 from the possible start/end hash
-		#brokenMsg.append(msg[index:index+MAX_CHARS])
-		#print(msg[index:index+MAX_CHARS])
-		#index += MAX_CHARS
-
 		#sending the messages after its all broken down
 			for w in brokenMsg:
 				self.text(w)
@@ -193,8 +191,10 @@ class Etxt_server():
 
 ES = Etxt_server()
 ES.setup()
-#email = open("sampleEmail.txt", 'r').read()
-words = "WASDSADSADSADAS"
+
+processingEmail = False
+recievedPieces = []		#list of messages to be pieced together
+recievedIndex  = []		#list of indexes of messages recieved
 
 app = Flask(__name__)
 @app.route("/", methods=['GET', 'POST'])
@@ -203,7 +203,8 @@ def hello_monkey():
 	#resp = twilio.twiml.Response()
 	rq = ES.client.messages.list();
 	print ("____MESSAGE____")
-	print(rq[0].body)
+	msg = rq[0].body
+	print(msg)
 	print(len(rq))
 	#for x in range (0,5):
 	#for message in rq:
@@ -211,6 +212,34 @@ def hello_monkey():
 	#resp.message(rq[0].body)
 	#resp.message(email)
 	#return str(resp)
+
+	if not processingEmail:
+		if msg[2] == "/":
+			processingEmail = True
+			recievedIndex  = [False] * int(msg[3:5])		#make size of list = number of texts required
+			recievedPieces = [""] * int(msg[3:5])			#same with the text pieces
+			recievedIndex [int(msg[:2])] = True				#turn the current index to true
+			recievedPieces[int(msg[:2])] = msg[5:]
+		else:
+			ES.sendEmail(msg)
+	else:
+		done = True
+		for i in range (len(recievedIndex)):
+			if recievedIndex[i] == False:
+				done = False
+				break
+		if done:
+			finalMsg = ""
+			for texts in recievedPieces:
+				finalMsg += texts
+			ES.sendEmail(finalMsg)
+			processingEmail = False
+
+		else:			
+			recievedIndex [int(msg[:2])] = True				#turn the current index to true
+			recievedPieces[int(msg[:2])] = msg[5:]
+
+
 	ES.text(rq[0].body)
 	#send an email
 	ES.sendEmail(rq[0].body)
