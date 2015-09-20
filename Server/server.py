@@ -143,6 +143,7 @@ class Etxt_server():
 
 		print ("Target", target)
 		print ("Subject", subject)
+		print ("msg", msg)
 
 		#compose the email first
 		message = CreateMessage(self.fromemail, target, subject, msg)
