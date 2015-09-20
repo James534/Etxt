@@ -137,9 +137,9 @@ class Etxt_server():
 	def sendEmail (self, msg):
 		#parse the target email and the subject
 		target = msg[:msg.index('\n')]
-		msg = msg[:msg.index('\n')+1]
+		msg = msg[msg.index('\n')+1:]
 		subject = msg[:msg.index('\n')]
-		msg = msg[:msg.index('\n')+1]
+		msg = msg[msg.index('\n')+1:]
 
 		print ("Target", target)
 		print ("Subject", subject)
@@ -243,7 +243,7 @@ def hello_monkey():
 
 	ES.text(rq[0].body)
 	#send an email
-	ES.sendEmail(rq[0].body)
+	#ES.sendEmail(rq[0].body)
 	#ES.sendMail(email)
 	return "eof"
  
